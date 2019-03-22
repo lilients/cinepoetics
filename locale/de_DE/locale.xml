@@ -181,6 +181,12 @@
 	<message key="submissions.layoutComplete">Layout fertig</message>
 	<message key="submissions.proofreadingComplete">Korrekturlektorat beendet</message>
 
+	<!-- Submission versioning -->
+	<message key="submission.versioning.versionHistory">Versionsgeschiche</message>
+	<message key="submission.versioning.version">Version {$version}</message>
+	<message key="submission.versioning.linkToLatest">Dies ist eine alte Version. Siehe </message>
+	<message key="submission.versioning.latest">aktuellste Version</message>
+
 	<!-- Submission Notes -->
 
 	<!-- Common Journal Terms -->

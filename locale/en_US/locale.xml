@@ -181,6 +181,12 @@
 	<message key="submissions.layoutComplete">Layout edited</message>
 	<message key="submissions.proofreadingComplete">Proofread</message>
 
+	<!-- Submission versioning -->
+	<message key="submission.versioning.versionHistory">Version History</message>
+	<message key="submission.versioning.version">Version {$version}</message>
+	<message key="submission.versioning.linkToLatest">This is a previous version. See </message>
+	<message key="submission.versioning.latest">latest version</message>
+
 	<!-- Submission Notes -->
 
 	<!-- Common Journal Terms -->

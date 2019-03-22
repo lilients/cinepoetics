@@ -31,7 +31,6 @@ class ArticleHandler extends Handler {
 	/** galley associated with the request **/
 	var $galley;
 
-
 	/**
 	 * @copydoc PKPHandler::authorize()
 	 */
@@ -86,6 +85,27 @@ class ArticleHandler extends Handler {
 		}
 	}
 
+
+	/**
+		 * Handle article versions. Calls view().
+		 * @param $args array
+		 * @param $request Request
+		 */
+		function version($args, $request){
+			$articleId = $args[0];
+			$submissionVersion = isset($args[1]) ? $args[1] : $this->article->getCurrentVersionId();
+			$galleyId = isset($args[2]) ? $args[2] : 0;
+			array_splice($args, 1, 1);
+
+			$journal = $request->getJournal();
+
+			// get this published article version
+			$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
+			$this->article = $publishedArticleDao->getPublishedArticleByBestArticleId((int) $journal->getId(), $articleId, false, $submissionVersion);
+			$this->view($args, $request);
+		}
+
+
 	/**
 	 * View Article. (Either article landing page or galley view.)
 	 * @param $args array
@@ -111,7 +131,7 @@ class ArticleHandler extends Handler {
 		if (!$this->userCanViewGalley($request, $articleId, $galleyId)) fatalError('Cannot view galley.');
 
 		// Get galleys sorted into primary and supplementary groups
-		$galleys = $article->getGalleys();
+		$galleys = $this->article->getGalleys();
 		$primaryGalleys = array();
 		$supplementaryGalleys = array();
 		if ($galleys) {
@@ -142,6 +162,11 @@ class ArticleHandler extends Handler {
 			'primaryGalleys' => $primaryGalleys,
 			'supplementaryGalleys' => $supplementaryGalleys,
 		));
+
+		// Fetch and assign all published article versions
+		$submissionDao = Application::getSubmissionDAO();
+		$templateMgr->assign('previousVersions', $submissionDao->getPublishedSubmissionVersionsById($article->getId()));
+		$templateMgr->assign('submissionVersion', $article->getSubmissionVersion());
 
 		// Fetch and assign the section to the template
 		$sectionDao = DAORegistry::getDAO('SectionDAO');
@@ -268,6 +293,10 @@ class ArticleHandler extends Handler {
 		$articleId = isset($args[0]) ? $args[0] : 0;
 		$galleyId = isset($args[1]) ? $args[1] : 0;
 		$fileId = isset($args[2]) ? (int) $args[2] : 0;
+		$submissionVersion = isset($args[3]) ? (int) $args[3] : 0;
+
+		$galleyDao = DAORegistry::getDAO('ArticleGalleyDAO');
+		$this->galley = $galleyDao->getByBestGalleyId($galleyId, $this->article->getId(), $submissionVersion);
 
 		if (!isset($this->galley)) $request->getDispatcher()->handle404();
 		if ($this->galley->getRemoteURL()) $request->redirectUrl($this->galley->getRemoteURL());
